@@ -52,15 +52,14 @@ Julia vectors
 **Why it is useful:** Memory-efficient container that provides fast numerical
 operations.
 
-.. ipython::
-
+.. julia::
+    julia> using BenchmarkTools
     julia> L = 1:1000
-
     julia> @btime [a^2 for a in L];
   1.342 µs (2 allocations: 7.97 KiB)
 
 
-.. extension package to Python to support multidimensional arrays
+.. support for multidimensional arrays
 
 .. diagram, import conventions
 
@@ -157,8 +156,8 @@ Manual construction of vectors
     * Create a simple two dimensional array. First, redo the examples
       from above. And then create your own: how about odd numbers
       counting backwards on the first row, and even numbers on the second?
-    * Use the functions :func:`len`, :func:`numpy.shape` on these arrays.
-      How do they relate to each other? And to the ``ndim`` attribute of
+    * Use the functions `length`, :`size` on these arrays.
+      How do they relate to each other? And to the ``ndims`` operations on 
       the arrays?
 
 Functions for creating arrays
