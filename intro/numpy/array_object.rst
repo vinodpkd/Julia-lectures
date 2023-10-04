@@ -212,27 +212,40 @@ Functions for creating vectors
      0.0  1.0  0.0
      0.0  0.0  1.0
 
-* :mod:`np.random`: random numbers (Mersenne Twister PRNG):
+* :mod:`rand`: random numbers:
 
   .. sourcecode:: pycon
-
-    julia> rng = np.random.default_rng(27446968)
-    julia> a = rng.random(4)       # uniform in [0, 1]
-    julia> a
-    array([0.64613018, 0.48984931, 0.50851229, 0.22563948])
-
-    julia> b = rng.standard_normal(4)      # Gaussian
-    julia> b
-    array([-0.38250769, -0.61536465,  0.98131732,  0.59353096])
-
+                              
+  julia> using Random           
+                                
+  julia> Random.seed!(123)      
+  TaskLocalRNG()                
+                                
+  julia> a = rand(5,) #uniform random numbers in the range [0,1]          
+  5-element Vector{Float64}:    
+   0.521213795535383            
+   0.5868067574533484           
+   0.8908786980927811           
+   0.19090669902576285          
+   0.5256623915420473 
+   
+   julia> b = randn(5,) #Gaussian random vector
+5-element Vector{Float64}:
+  0.9809798121241488
+  0.0799568295050599
+  1.5491245530427917
+ -1.3416092408832219
+  0.41216163468296796   
+   
+   
 .. topic:: **Exercise: Creating arrays using functions**
    :class: green
 
-   * Experiment with ``arange``, ``linspace``, ``ones``, ``zeros``, ``eye`` and
-     ``diag``.
+   * Experiment with ``:``, ``range``, ``ones``, ``zeros``, ``I`` and
+     ``diagm``.
    * Create different kinds of arrays with random numbers.
    * Try setting the seed before creating an array with random values.
-   * Look at the function ``np.empty``. What does it do? When might this be
+   * Look at the function ``empty``. What does it do? When might this be
      useful?
 
 .. EXE: construct 1 2 3 4 5
@@ -250,39 +263,30 @@ data-type used:
 
 .. sourcecode:: pycon
 
-    julia> a = np.array([1, 2, 3])
-    julia> a.dtype
-    dtype('int64')
+    julia> a = [1, 2, 3]
+    julia> eltype(a)
+    Int64
 
-    julia> b = np.array([1., 2., 3.])
-    julia> b.dtype
-    dtype('float64')
+    julia> b = [1., 2., 3.]
+    julia> eltype(b)
+    Float64
 
 .. tip::
 
     Different data-types allow us to store data more compactly in memory,
     but most of the time we simply work with floating point numbers.
-    Note that, in the example above, NumPy auto-detects the data-type
+    Note that, in the example above, Julia auto-detects the data-type
     from the input.
 
 -----------------------------
-
-You can explicitly specify which data-type you want:
-
-.. sourcecode:: pycon
-
-    julia> c = np.array([1, 2, 3], dtype=float)
-    julia> c.dtype
-    dtype('float64')
-
 
 The **default** data type is floating point:
 
 .. sourcecode:: pycon
 
-    julia> a = np.ones((3, 3))
-    julia> a.dtype
-    dtype('float64')
+    julia> a = ones(3, 3)
+    julia> eltype(a)
+    Float64
 
 There are also other types:
 
@@ -290,17 +294,16 @@ There are also other types:
 
   .. sourcecode:: pycon
 
-        julia> d = np.array([1+2j, 3+4j, 5+6*1j])
-        julia> d.dtype
-        dtype('complex128')
-
+        julia> d = [1+2im, 3+4im, 5+6*1im]
+        julia> eltype(d)
+        Complex{Int64}
 :Bool:
 
   .. sourcecode:: pycon
 
-        julia> e = np.array([True, False, False, True])
-        julia> e.dtype
-        dtype('bool')
+        julia> e = [true, false, false, true]
+        julia> eltype(e)
+        Bool
 
 :Strings:
 
