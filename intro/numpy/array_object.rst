@@ -1,7 +1,5 @@
 ..  
 
-This is an inline math :math:`x^2+y^2=z^2`.
-
 .. currentmodule:: numpy
 
 The Julia Vector
