@@ -315,7 +315,7 @@ There are also other types:
         
 :Much more:
 
-      `Int8`,`UInt8`,`Int16`,`UInt16`,`Int32`,`UInt32`,`Int64`,`UInt64`,`Int128`,`UInt128`,`Float16`,`Float32`,`and `Float64`
+      `Int8`,`UInt8`,`Int16`,`UInt16`,`Int32`,`UInt32`,`Int64`,`UInt64`,`Int128`,`UInt128`,`Float16`,`Float32`, and `Float64`
 
 
 
