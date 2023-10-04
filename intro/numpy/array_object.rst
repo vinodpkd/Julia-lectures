@@ -1,52 +1,43 @@
-..
-    >>> import numpy as np
-    >>> import matplotlib.pyplot as plt
+..  
 
 
 .. currentmodule:: numpy
 
-The NumPy array object
+The Julia Vector
 ======================
 
 .. contents:: Section contents
     :local:
     :depth: 1
 
-What are NumPy and NumPy arrays?
+What are Julia vectors?
 --------------------------------
 
-NumPy arrays
+Julia vectors
 ............
 
-:**Python** objects:
+:**Julia** provides:
 
-    - high-level number objects: integers, floating point
-
-    - containers: lists (costless insertion and append), dictionaries
-      (fast lookup)
-
-:**NumPy** provides:
-
-    - extension package to Python for multi-dimensional arrays
+    - Builtin multi-dimensional arrays
 
     - closer to hardware (efficiency)
 
     - designed for scientific computation (convenience)
 
-    - Also known as *array oriented computing*
-
 |
 
 .. sourcecode:: pycon
 
-    >>> import numpy as np
-    >>> a = np.array([0, 1, 2, 3])
-    >>> a
-    array([0, 1, 2, 3])
-
+    julia> v = [0, 1, 2, 3]
+      4-element Vector{Int64}:     
+       0                           
+       1                           
+       2                           
+       3                           
+    
 .. tip::
 
-    For example, An array containing:
+    For example, a vector containing:
 
     * values of an experiment/simulation at discrete time steps
 
@@ -61,130 +52,103 @@ NumPy arrays
 **Why it is useful:** Memory-efficient container that provides fast numerical
 operations.
 
-.. ipython::
-
-    In [1]: L = range(1000)
-
-    In [2]: %timeit [i**2 for i in L]
-    1000 loops, best of 3: 403 us per loop
-
-    In [3]: a = np.arange(1000)
-
-    In [4]: %timeit a**2
-    100000 loops, best of 3: 12.7 us per loop
+.. julia::
+    julia> using BenchmarkTools
+    julia> L = 1:1000
+    julia> @btime [a^2 for a in L];
+  1.342 µs (2 allocations: 7.97 KiB)
 
 
-.. extension package to Python to support multidimensional arrays
+.. support for multidimensional arrays
 
 .. diagram, import conventions
 
-.. scope of this tutorial: drill in features of array manipulation in
-   Python, and try to give some indication on how to get things done
+.. scope of this tutorial: drill in features of vector manipulation in
+   Julia, and try to give some indication on how to get things done
    in good style
 
 .. a fixed number of elements (cf. certain exceptions)
 .. each element of same size and type
-.. efficiency vs. Python lists
 
-NumPy Reference documentation
+
+Julia Reference documentation
 ..............................
 
-- On the web: https://numpy.org/doc/
+- On the web: https://docs.julialang.org/
 
 - Interactive help:
 
   .. ipython::
 
-     In [5]: np.array?
-     String Form:<built-in function array>
-     Docstring:
-     array(object, dtype=None, copy=True, order=None, subok=False, ndmin=0, ...
+     julia> ? Matrix
+    search: Matrix BitMatrix DenseMatrix StridedMatrix AbstractMatrix
 
-  .. tip:
+      Matrix{T} <: AbstractMatrix{T}
 
-   .. sourcecode:: pycon
+      Two-dimensional dense array with elements of type T, often used to represent a mathematical matrix. Alias for Array{T,2}.
 
-     >>> help(np.array)
-     Help on built-in function array in module numpy:
-     <BLANKLINE>
-     array(...)
-         array(object, dtype=None, ...
-
+      See also fill, zeros, undef and similar for creating matrices.
+      
+  
 
 - Looking for something:
 
-  .. sourcecode:: pycon
-
-     >>> np.lookfor('create array') # doctest: +SKIP
-     Search results for 'create array'
-     ---------------------------------
-     numpy.array
-         Create an array.
-     numpy.memmap
-         Create a memory-map to an array stored in a *binary* file on disk.
 
   .. ipython::
 
-     In [6]: np.con*?
-     np.concatenate
-     np.conj
-     np.conjugate
-     np.convolve
-
-Import conventions
-..................
-
-The recommended convention to import NumPy is:
-
-.. sourcecode:: pycon
-
-   >>> import numpy as np
+     julia> mat<Tab><Tab> # press tab key twq times
+     MathConstants  Matrix
 
 
-Creating arrays
+
+
+Creating vectors
 ---------------
 
-Manual construction of arrays
+Manual construction of vectors
 ..............................
 
 * **1-D**:
 
   .. sourcecode:: pycon
 
-    >>> a = np.array([0, 1, 2, 3])
-    >>> a
-    array([0, 1, 2, 3])
-    >>> a.ndim
+    julia> a = [0, 1, 2, 3]
+   
+    julia> ndims(a)
     1
-    >>> a.shape
+    julia> size(a)
     (4,)
-    >>> len(a)
+    julia> length(a)
     4
 
 * **2-D, 3-D, ...**:
 
   .. sourcecode:: pycon
 
-    >>> b = np.array([[0, 1, 2], [3, 4, 5]])    # 2 x 3 array
-    >>> b
-    array([[0, 1, 2],
-           [3, 4, 5]])
-    >>> b.ndim
+    julia> b = [0  1  2; 3 4 5]
+    2×3 Matrix{Int64}:
+     0  1  2
+     3  4  5
+    julia> ndims(b)
     2
-    >>> b.shape
+    julia> size(b)
     (2, 3)
-    >>> len(b)     # returns the size of the first dimension
-    2
+    julia> length(b)     # returns the total size = 2 x 3
+    6
 
-    >>> c = np.array([[[1], [2]], [[3], [4]]])
-    >>> c
-    array([[[1],
-            [2]],
-    <BLANKLINE>
-           [[3],
-            [4]]])
-    >>> c.shape
-    (2, 2, 1)
+    julia> c = [1 3 5
+               2 4 6;;;
+               7 9 11
+               8 10 12]
+        2×3×2 Array{Int64, 3}:
+        [:, :, 1] =
+         1  3  5
+         2  4  6
+
+        [:, :, 2] =
+         7   9  11
+         8  10  12
+
 
 .. topic:: **Exercise: Simple arrays**
     :class: green
@@ -192,8 +156,8 @@ Manual construction of arrays
     * Create a simple two dimensional array. First, redo the examples
       from above. And then create your own: how about odd numbers
       counting backwards on the first row, and even numbers on the second?
-    * Use the functions :func:`len`, :func:`numpy.shape` on these arrays.
-      How do they relate to each other? And to the ``ndim`` attribute of
+    * Use the functions `length`, :`size` on these arrays.
+      How do they relate to each other? And to the ``ndims`` operations on 
       the arrays?
 
 Functions for creating arrays
@@ -207,44 +171,44 @@ Functions for creating arrays
 
   .. sourcecode:: pycon
 
-    >>> a = np.arange(10) # 0 .. n-1  (!)
-    >>> a
+    julia> a = np.arange(10) # 0 .. n-1  (!)
+    julia> a
     array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
-    >>> b = np.arange(1, 9, 2) # start, end (exclusive), step
-    >>> b
+    julia> b = np.arange(1, 9, 2) # start, end (exclusive), step
+    julia> b
     array([1, 3, 5, 7])
 
 * or by number of points:
 
   .. sourcecode:: pycon
 
-    >>> c = np.linspace(0, 1, 6)   # start, end, num-points
-    >>> c
+    julia> c = np.linspace(0, 1, 6)   # start, end, num-points
+    julia> c
     array([0. ,  0.2,  0.4,  0.6,  0.8,  1. ])
-    >>> d = np.linspace(0, 1, 5, endpoint=False)
-    >>> d
+    julia> d = np.linspace(0, 1, 5, endpoint=False)
+    julia> d
     array([0. ,  0.2,  0.4,  0.6,  0.8])
 
 * Common arrays:
 
   .. sourcecode:: pycon
 
-    >>> a = np.ones((3, 3))  # reminder: (3, 3) is a tuple
-    >>> a
+    julia> a = np.ones((3, 3))  # reminder: (3, 3) is a tuple
+    julia> a
     array([[1.,  1.,  1.],
            [1.,  1.,  1.],
            [1.,  1.,  1.]])
-    >>> b = np.zeros((2, 2))
-    >>> b
+    julia> b = np.zeros((2, 2))
+    julia> b
     array([[0.,  0.],
            [0.,  0.]])
-    >>> c = np.eye(3)
-    >>> c
+    julia> c = np.eye(3)
+    julia> c
     array([[1.,  0.,  0.],
            [0.,  1.,  0.],
            [0.,  0.,  1.]])
-    >>> d = np.diag(np.array([1, 2, 3, 4]))
-    >>> d
+    julia> d = np.diag(np.array([1, 2, 3, 4]))
+    julia> d
     array([[1, 0, 0, 0],
            [0, 2, 0, 0],
            [0, 0, 3, 0],
@@ -254,13 +218,13 @@ Functions for creating arrays
 
   .. sourcecode:: pycon
 
-    >>> rng = np.random.default_rng(27446968)
-    >>> a = rng.random(4)       # uniform in [0, 1]
-    >>> a
+    julia> rng = np.random.default_rng(27446968)
+    julia> a = rng.random(4)       # uniform in [0, 1]
+    julia> a
     array([0.64613018, 0.48984931, 0.50851229, 0.22563948])
 
-    >>> b = rng.standard_normal(4)      # Gaussian
-    >>> b
+    julia> b = rng.standard_normal(4)      # Gaussian
+    julia> b
     array([-0.38250769, -0.61536465,  0.98131732,  0.59353096])
 
 .. topic:: **Exercise: Creating arrays using functions**
@@ -288,12 +252,12 @@ data-type used:
 
 .. sourcecode:: pycon
 
-    >>> a = np.array([1, 2, 3])
-    >>> a.dtype
+    julia> a = np.array([1, 2, 3])
+    julia> a.dtype
     dtype('int64')
 
-    >>> b = np.array([1., 2., 3.])
-    >>> b.dtype
+    julia> b = np.array([1., 2., 3.])
+    julia> b.dtype
     dtype('float64')
 
 .. tip::
@@ -309,8 +273,8 @@ You can explicitly specify which data-type you want:
 
 .. sourcecode:: pycon
 
-    >>> c = np.array([1, 2, 3], dtype=float)
-    >>> c.dtype
+    julia> c = np.array([1, 2, 3], dtype=float)
+    julia> c.dtype
     dtype('float64')
 
 
@@ -318,8 +282,8 @@ The **default** data type is floating point:
 
 .. sourcecode:: pycon
 
-    >>> a = np.ones((3, 3))
-    >>> a.dtype
+    julia> a = np.ones((3, 3))
+    julia> a.dtype
     dtype('float64')
 
 There are also other types:
@@ -328,24 +292,24 @@ There are also other types:
 
   .. sourcecode:: pycon
 
-        >>> d = np.array([1+2j, 3+4j, 5+6*1j])
-        >>> d.dtype
+        julia> d = np.array([1+2j, 3+4j, 5+6*1j])
+        julia> d.dtype
         dtype('complex128')
 
 :Bool:
 
   .. sourcecode:: pycon
 
-        >>> e = np.array([True, False, False, True])
-        >>> e.dtype
+        julia> e = np.array([True, False, False, True])
+        julia> e.dtype
         dtype('bool')
 
 :Strings:
 
   .. sourcecode:: pycon
 
-        >>> f = np.array(['Bonjour', 'Hello', 'Hallo'])
-        >>> f.dtype     # <--- strings containing max. 7 letters
+        julia> f = np.array(['Bonjour', 'Hello', 'Hallo'])
+        julia> f.dtype     # <--- strings containing max. 7 letters
         dtype('<U7')
 
 :Much more:
@@ -379,13 +343,13 @@ Once IPython has started, enable interactive plots:
 
 .. sourcecode:: pycon
 
-    >>> %matplotlib  # doctest: +SKIP
+    julia> %matplotlib  # doctest: +SKIP
 
 Or, from the notebook, enable plots in the notebook:
 
 .. sourcecode:: pycon
 
-    >>> %matplotlib inline # doctest: +SKIP
+    julia> %matplotlib inline # doctest: +SKIP
 
 The ``inline`` is important for the notebook, so that plots are displayed in
 the notebook and not in a new window.
@@ -394,30 +358,30 @@ the notebook and not in a new window.
 
 .. sourcecode:: pycon
 
-    >>> import matplotlib.pyplot as plt  # the tidy way
+    julia> import matplotlib.pyplot as plt  # the tidy way
 
 And then use (note that you have to use ``show`` explicitly if you have not enabled interactive plots with ``%matplotlib``):
 
 .. sourcecode:: pycon
 
-    >>> plt.plot(x, y)       # line plot    # doctest: +SKIP
-    >>> plt.show()           # <-- shows the plot (not needed with interactive plots) # doctest: +SKIP
+    julia> plt.plot(x, y)       # line plot    # doctest: +SKIP
+    julia> plt.show()           # <-- shows the plot (not needed with interactive plots) # doctest: +SKIP
 
 Or, if you have enabled interactive plots with ``%matplotlib``:
 
 .. sourcecode:: pycon
 
-    >>> plt.plot(x, y)       # line plot    # doctest: +SKIP
+    julia> plt.plot(x, y)       # line plot    # doctest: +SKIP
 
 * **1D plotting**:
 
 .. sourcecode:: pycon
 
-  >>> x = np.linspace(0, 3, 20)
-  >>> y = np.linspace(0, 9, 20)
-  >>> plt.plot(x, y)       # line plot
+  julia> x = np.linspace(0, 3, 20)
+  julia> y = np.linspace(0, 9, 20)
+  julia> plt.plot(x, y)       # line plot
   [<matplotlib.lines.Line2D object at ...>]
-  >>> plt.plot(x, y, 'o')  # dot plot
+  julia> plt.plot(x, y, 'o')  # dot plot
   [<matplotlib.lines.Line2D object at ...>]
 
 .. image:: auto_examples/images/sphx_glr_plot_basic1dplot_001.png
@@ -429,11 +393,11 @@ Or, if you have enabled interactive plots with ``%matplotlib``:
 
 .. sourcecode:: pycon
 
-  >>> rng = np.random.default_rng(27446968)
-  >>> image = rng.random((30, 30))
-  >>> plt.imshow(image, cmap=plt.cm.hot)
+  julia> rng = np.random.default_rng(27446968)
+  julia> image = rng.random((30, 30))
+  julia> plt.imshow(image, cmap=plt.cm.hot)
   <matplotlib.image.AxesImage object at ...>
-  >>> plt.colorbar()
+  julia> plt.colorbar()
   <matplotlib.colorbar.Colorbar object at ...>
 
 .. image:: auto_examples/images/sphx_glr_plot_basic2dplot_001.png
@@ -459,10 +423,10 @@ other Python sequences (e.g. lists):
 
 .. sourcecode:: pycon
 
-    >>> a = np.arange(10)
-    >>> a
+    julia> a = np.arange(10)
+    julia> a
     array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
-    >>> a[0], a[2], a[-1]
+    julia> a[0], a[2], a[-1]
     (0, 2, 9)
 
 .. warning::
@@ -474,26 +438,26 @@ The usual python idiom for reversing a sequence is supported:
 
 .. sourcecode:: pycon
 
-   >>> a[::-1]
+   julia> a[::-1]
    array([9, 8, 7, 6, 5, 4, 3, 2, 1, 0])
 
 For multidimensional arrays, indices are tuples of integers:
 
 .. sourcecode:: pycon
 
-    >>> a = np.diag(np.arange(3))
-    >>> a
+    julia> a = np.diag(np.arange(3))
+    julia> a
     array([[0, 0, 0],
            [0, 1, 0],
            [0, 0, 2]])
-    >>> a[1, 1]
+    julia> a[1, 1]
     1
-    >>> a[2, 1] = 10 # third line, second column
-    >>> a
+    julia> a[2, 1] = 10 # third line, second column
+    julia> a
     array([[ 0,  0,  0],
            [ 0,  1,  0],
            [ 0, 10,  2]])
-    >>> a[1]
+    julia> a[1]
     array([0, 1, 0])
 
 
@@ -508,17 +472,17 @@ For multidimensional arrays, indices are tuples of integers:
 
 .. sourcecode:: pycon
 
-    >>> a = np.arange(10)
-    >>> a
+    julia> a = np.arange(10)
+    julia> a
     array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
-    >>> a[2:9:3] # [start:end:step]
+    julia> a[2:9:3] # [start:end:step]
     array([2, 5, 8])
 
 Note that the last index is not included! :
 
 .. sourcecode:: pycon
 
-    >>> a[:4]
+    julia> a[:4]
     array([0, 1, 2, 3])
 
 All three slice components are not required: by default, `start` is 0,
@@ -526,11 +490,11 @@ All three slice components are not required: by default, `start` is 0,
 
 .. sourcecode:: pycon
 
-    >>> a[1:3]
+    julia> a[1:3]
     array([1, 2])
-    >>> a[::2]
+    julia> a[::2]
     array([0, 2, 4, 6, 8])
-    >>> a[3:]
+    julia> a[3:]
     array([3, 4, 5, 6, 7, 8, 9])
 
 A small illustrated summary of NumPy indexing and slicing...
@@ -550,13 +514,13 @@ You can also combine assignment and slicing:
 
 .. sourcecode:: pycon
 
-   >>> a = np.arange(10)
-   >>> a[5:] = 10
-   >>> a
+   julia> a = np.arange(10)
+   julia> a[5:] = 10
+   julia> a
    array([ 0,  1,  2,  3,  4, 10, 10, 10, 10, 10])
-   >>> b = np.arange(5)
-   >>> a[5:] = b[::-1]
-   >>> a
+   julia> b = np.arange(5)
+   julia> a[5:] = b[::-1]
+   julia> a
    array([0, 1, 2, 3, 4, 4, 3, 2, 1, 0])
 
 .. topic:: **Exercise: Indexing and slicing**
@@ -570,7 +534,7 @@ You can also combine assignment and slicing:
 
      .. sourcecode:: pycon
 
-        >>> np.arange(6) + np.arange(0, 51, 10)[:, np.newaxis]
+        julia> np.arange(6) + np.arange(0, 51, 10)[:, np.newaxis]
         array([[ 0,  1,  2,  3,  4,  5],
                [10, 11, 12, 13, 14, 15],
                [20, 21, 22, 23, 24, 25],
@@ -626,27 +590,27 @@ give you false positives.
 
 .. sourcecode:: pycon
 
-    >>> a = np.arange(10)
-    >>> a
+    julia> a = np.arange(10)
+    julia> a
     array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
-    >>> b = a[::2]
-    >>> b
+    julia> b = a[::2]
+    julia> b
     array([0, 2, 4, 6, 8])
-    >>> np.may_share_memory(a, b)
+    julia> np.may_share_memory(a, b)
     True
-    >>> b[0] = 12
-    >>> b
+    julia> b[0] = 12
+    julia> b
     array([12,  2,  4,  6,  8])
-    >>> a   # (!)
+    julia> a   # (!)
     array([12,  1,  2,  3,  4,  5,  6,  7,  8,  9])
 
-    >>> a = np.arange(10)
-    >>> c = a[::2].copy()  # force a copy
-    >>> c[0] = 12
-    >>> a
+    julia> a = np.arange(10)
+    julia> c = a[::2].copy()  # force a copy
+    julia> c[0] = 12
+    julia> a
     array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
 
-    >>> np.may_share_memory(a, c)
+    julia> np.may_share_memory(a, c)
     False
 
 
@@ -678,20 +642,20 @@ memory and time.
 
    .. sourcecode:: pycon
 
-        >>> is_prime = np.ones((100,), dtype=bool)
+        julia> is_prime = np.ones((100,), dtype=bool)
 
    * Cross out 0 and 1 which are not primes:
 
    .. sourcecode:: pycon
 
-       >>> is_prime[:2] = 0
+       julia> is_prime[:2] = 0
 
    * For each integer ``j`` starting from 2, cross out its higher multiples:
 
    .. sourcecode:: pycon
 
-       >>> N_max = int(np.sqrt(len(is_prime) - 1))
-       >>> for j in range(2, N_max + 1):
+       julia> N_max = int(np.sqrt(len(is_prime) - 1))
+       julia> for j in range(2, N_max + 1):
        ...     is_prime[2*j::j] = False
 
    * Skim through ``help(np.nonzero)``, and print the prime numbers
@@ -723,24 +687,24 @@ Using boolean masks
 
 .. sourcecode:: pycon
 
-    >>> rng = np.random.default_rng(27446968)
-    >>> a = rng.integers(0, 21, 15)
-    >>> a
+    julia> rng = np.random.default_rng(27446968)
+    julia> a = rng.integers(0, 21, 15)
+    julia> a
     array([ 3, 13, 12, 10, 10, 10, 18,  4,  8,  5,  6, 11, 12, 17,  3])
-    >>> (a % 3 == 0)
+    julia> (a % 3 == 0)
     array([ True, False,  True, False, False, False,  True, False, False,
            False,  True, False,  True, False,  True])
-    >>> mask = (a % 3 == 0)
-    >>> extract_from_a = a[mask] # or,  a[a%3==0]
-    >>> extract_from_a           # extract a sub-array with the mask
+    julia> mask = (a % 3 == 0)
+    julia> extract_from_a = a[mask] # or,  a[a%3==0]
+    julia> extract_from_a           # extract a sub-array with the mask
     array([ 3, 12, 18,  6, 12,  3])
 
 Indexing with a mask can be very useful to assign a new value to a sub-array:
 
 .. sourcecode:: pycon
 
-    >>> a[a % 3 == 0] = -1
-    >>> a
+    julia> a[a % 3 == 0] = -1
+    julia> a
     array([-1, 13, -1, 10, 10, 10, -1,  4,  8,  5, -1, 11, -1, 17, -1])
 
 
@@ -749,8 +713,8 @@ Indexing with an array of integers
 
 .. sourcecode:: pycon
 
-    >>> a = np.arange(0, 100, 10)
-    >>> a
+    julia> a = np.arange(0, 100, 10)
+    julia> a
     array([ 0, 10, 20, 30, 40, 50, 60, 70, 80, 90])
 
 Indexing can be done with an array of integers, where the same index is repeated
@@ -758,15 +722,15 @@ several time:
 
 .. sourcecode:: pycon
 
-    >>> a[[2, 3, 2, 4, 2]]  # note: [2, 3, 2, 4, 2] is a Python list
+    julia> a[[2, 3, 2, 4, 2]]  # note: [2, 3, 2, 4, 2] is a Python list
     array([20, 30, 20, 40, 20])
 
 New values can be assigned with this kind of indexing:
 
 .. sourcecode:: pycon
 
-    >>> a[[9, 7]] = -100
-    >>> a
+    julia> a[[9, 7]] = -100
+    julia> a
     array([   0,   10,   20,   30,   40,   50,   60, -100,   80, -100])
 
 .. tip::
@@ -776,11 +740,11 @@ New values can be assigned with this kind of indexing:
 
   .. sourcecode:: pycon
 
-    >>> a = np.arange(10)
-    >>> idx = np.array([[3, 4], [9, 7]])
-    >>> idx.shape
+    julia> a = np.arange(10)
+    julia> idx = np.array([[3, 4], [9, 7]])
+    julia> idx.shape
     (2, 2)
-    >>> a[idx]
+    julia> a[idx]
     array([[3, 4],
            [9, 7]])
 
@@ -813,12 +777,12 @@ The image below illustrates various fancy indexing applications
 ..
 .. .. sourcecode:: pycon
 ..
-..     >>> a = np.arange(12).reshape(3,4)
-..     >>> a
+..     julia> a = np.arange(12).reshape(3,4)
+..     julia> a
 ..     array([[ 0,  1,  2,  3],
 ..            [ 4,  5,  6,  7],
 ..            [ 8,  9, 10, 11]])
-..     >>> i = np.array([[0, 1], [1, 2]])
-..     >>> a[i, 2] # same as a[i, 2*np.ones((2, 2), dtype=int)]
+..     julia> i = np.array([[0, 1], [1, 2]])
+..     julia> a[i, 2] # same as a[i, 2*np.ones((2, 2), dtype=int)]
 ..     array([[ 2,  6],
 ..            [ 6, 10]])
