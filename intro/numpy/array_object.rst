@@ -1,5 +1,6 @@
 ..  
 
+
 .. currentmodule:: numpy
 
 The Julia Vector
@@ -95,7 +96,7 @@ Julia Reference documentation
 
   .. ipython::
 
-     julia> mat<Tab><Tab> # press tab key twq times
+     julia> mat<Tab><Tab> # press tab key two times
      MathConstants  Matrix
 
 
@@ -308,18 +309,15 @@ There are also other types:
 
   .. sourcecode:: pycon
 
-        julia> f = np.array(['Bonjour', 'Hello', 'Hallo'])
-        julia> f.dtype     # <--- strings containing max. 7 letters
-        dtype('<U7')
-
+        julia> f = ["Bonjour", "Hello", "Hallo"]
+        julia> eltype(f)
+        String
+        
 :Much more:
 
-    * ``int32``
-    * ``int64``
-    * ``uint32``
-    * ``uint64``
+      `Int8`,`UInt8`,`Int16`,`UInt16`,`Int32`,`UInt32`,`Int64`,`UInt64`,`Int128`,`UInt128`,`Float16`,`Float32`,`and `Float64`
 
-.. XXX: mention: astype
+
 
 
 Basic visualization
@@ -327,45 +325,12 @@ Basic visualization
 
 Now that we have our first data arrays, we are going to visualize them.
 
-Start by launching IPython:
-
-.. sourcecode:: bash
-
-    $ ipython # or ipython3 depending on your install
-
-Or the notebook:
-
-.. sourcecode:: bash
-
-   $ jupyter notebook
-
-Once IPython has started, enable interactive plots:
-
 .. sourcecode:: pycon
 
-    julia> %matplotlib  # doctest: +SKIP
-
-Or, from the notebook, enable plots in the notebook:
-
-.. sourcecode:: pycon
-
-    julia> %matplotlib inline # doctest: +SKIP
-
-The ``inline`` is important for the notebook, so that plots are displayed in
-the notebook and not in a new window.
-
-*Matplotlib* is a 2D plotting package. We can import its functions as below:
-
-.. sourcecode:: pycon
-
-    julia> import matplotlib.pyplot as plt  # the tidy way
-
-And then use (note that you have to use ``show`` explicitly if you have not enabled interactive plots with ``%matplotlib``):
-
-.. sourcecode:: pycon
-
-    julia> plt.plot(x, y)       # line plot    # doctest: +SKIP
-    julia> plt.show()           # <-- shows the plot (not needed with interactive plots) # doctest: +SKIP
+    julia> using Plots
+    julia> x = 1:100;y = 1:100; 
+    julia> plot(x, y)       # line plot    # doctest: +SKIP
+    
 
 Or, if you have enabled interactive plots with ``%matplotlib``:
 
@@ -392,27 +357,22 @@ Or, if you have enabled interactive plots with ``%matplotlib``:
 * **2D arrays** (such as images):
 
 .. sourcecode:: pycon
-
-  julia> rng = np.random.default_rng(27446968)
-  julia> image = rng.random((30, 30))
-  julia> plt.imshow(image, cmap=plt.cm.hot)
-  <matplotlib.image.AxesImage object at ...>
-  julia> plt.colorbar()
-  <matplotlib.colorbar.Colorbar object at ...>
+  julia> using PyPlot
+  julia> image = rand(1:255,10,10)
+  julia> PyPlot.imshow(image)
+ 
 
 .. image:: auto_examples/images/sphx_glr_plot_basic2dplot_001.png
     :width: 50%
     :target: auto_examples/plot_basic2dplot.html
     :align: center
 
-.. seealso:: More in the: :ref:`matplotlib chapter <matplotlib>`
-
 .. topic:: **Exercise: Simple visualizations**
    :class: green
 
    * Plot some simple arrays: a cosine as a function of time and a 2D
      matrix.
-   * Try using the ``gray`` colormap on the 2D matrix.
+   
 
 
 Indexing and slicing
