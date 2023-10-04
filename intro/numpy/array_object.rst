@@ -328,6 +328,9 @@ There are also other types:
     `Float16`
     `Float32`
     `Float64`
+    `ComplexF32`
+    `ComplexF64`
+    `Bool`
 
 
 
@@ -344,22 +347,17 @@ Now that we have our first data arrays, we are going to visualize them.
     julia> plot(x, y)       # line plot    # doctest: +SKIP
     
 
-Or, if you have enabled interactive plots with ``%matplotlib``:
-
 .. sourcecode:: pycon
-
-    julia> plt.plot(x, y)       # line plot    # doctest: +SKIP
+    julia> using PyPlot
+    julia> PyPlot.plot(x, y)       # line plot    # doctest: +SKIP
 
 * **1D plotting**:
 
 .. sourcecode:: pycon
 
-  julia> x = np.linspace(0, 3, 20)
-  julia> y = np.linspace(0, 9, 20)
-  julia> plt.plot(x, y)       # line plot
-  [<matplotlib.lines.Line2D object at ...>]
-  julia> plt.plot(x, y, 'o')  # dot plot
-  [<matplotlib.lines.Line2D object at ...>]
+  julia> x = LinRange(0, 3, 20)
+  julia> y = LinRange(0, 9, 20)
+  julia> PyPlot.plot(x, y, "g^")  # ^ plot
 
 .. image:: auto_examples/images/sphx_glr_plot_basic1dplot_001.png
     :width: 40%
@@ -395,79 +393,94 @@ other Python sequences (e.g. lists):
 
 .. sourcecode:: pycon
 
-    julia> a = np.arange(10)
+    julia> a = collect(1:9)
     julia> a
-    array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
-    julia> a[0], a[2], a[-1]
-    (0, 2, 9)
+    [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    julia> a[1], a[3], a[end]
+    (1, 3, 9)
 
 .. warning::
 
-   Indices begin at 0, like other Python sequences (and C/C++).
-   In contrast, in Fortran or Matlab, indices begin at 1.
+   Indices begin at 1, like other Julia sequences (Fortran or Matlab).
+   In contrast, in C/C++, indices begin at 0.
 
 The usual python idiom for reversing a sequence is supported:
 
 .. sourcecode:: pycon
 
-   julia> a[::-1]
-   array([9, 8, 7, 6, 5, 4, 3, 2, 1, 0])
+   julia> reverse(a)
+   [9, 8, 7, 6, 5, 4, 3, 2, 1])
 
 For multidimensional arrays, indices are tuples of integers:
 
 .. sourcecode:: pycon
 
-    julia> a = np.diag(np.arange(3))
-    julia> a
-    array([[0, 0, 0],
-           [0, 1, 0],
-           [0, 0, 2]])
-    julia> a[1, 1]
+    julia> using LinearAlgebra
+
+    julia> A = diagm([1,1,1,1])
+    4×4 Matrix{Int64}:
+     1  0  0  0
+     0  1  0  0
+     0  0  1  0
+     0  0  0  1 
+    
+    julia> A[1, 1]
     1
-    julia> a[2, 1] = 10 # third line, second column
-    julia> a
-    array([[ 0,  0,  0],
-           [ 0,  1,  0],
-           [ 0, 10,  2]])
-    julia> a[1]
-    array([0, 1, 0])
+    julia> A[2, 1] = 10 # second line, first column
+    julia> A
+    4×4 Matrix{Int64}:
+      1  0  0  0
+     10  1  0  0
+      0  0  1  0
+      0  0  0  1
+    
+    julia> A[1,:]
+    4-element Vector{Int64}:
+     1
+     0
+     0
+     0
+
+    julia> A[1:1,:]
+    1×4 Matrix{Int64}:
+     1  0  0  0
+     julia> A[1]
+     1
 
 
 .. note::
 
   * In 2D, the first dimension corresponds to **rows**, the second
     to **columns**.
-  * for multidimensional ``a``, ``a[0]`` is interpreted by
-    taking all elements in the unspecified dimensions.
+  * for multidimensional ``A``, ``A[p]`` is interpreted by
+   the column major concept. If `p = k*m + q`, ``A[p] = A[q+1,k]``.
 
-**Slicing**: Arrays, like other Python sequences can also be sliced:
+**Slicing**: Arrays, like other Julia sequences can also be sliced:
 
 .. sourcecode:: pycon
 
-    julia> a = np.arange(10)
+    julia> a = collect(0:9)
     julia> a
-    array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
-    julia> a[2:9:3] # [start:end:step]
-    array([2, 5, 8])
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    julia> a[2:3:9] # [start:step:end]
+    [1, 4, 7]
 
-Note that the last index is not included! :
+Note that the last index is included! :
 
 .. sourcecode:: pycon
 
-    julia> a[:4]
+    julia> a[1:4]
     array([0, 1, 2, 3])
 
-All three slice components are not required: by default, `start` is 0,
-`end` is the last and `step` is 1:
 
 .. sourcecode:: pycon
 
     julia> a[1:3]
-    array([1, 2])
-    julia> a[::2]
-    array([0, 2, 4, 6, 8])
-    julia> a[3:]
-    array([3, 4, 5, 6, 7, 8, 9])
+    [0, 1, 2]
+    julia> a[1:2:end]
+    [0, 2, 4, 6, 8]
+    julia> a[3:end]
+    [2, 3, 4, 5, 6, 7, 8, 9]
 
 A small illustrated summary of NumPy indexing and slicing...
 
@@ -486,14 +499,14 @@ You can also combine assignment and slicing:
 
 .. sourcecode:: pycon
 
-   julia> a = np.arange(10)
-   julia> a[5:] = 10
+   julia> a = 0:9
+   julia> a[5:end] = 10
    julia> a
-   array([ 0,  1,  2,  3,  4, 10, 10, 10, 10, 10])
-   julia> b = np.arange(5)
-   julia> a[5:] = b[::-1]
+   array([ 0,  1,  2,  3,  10, 10, 10, 10, 10, 10])
+   julia> b = 0:5
+   julia> a[5:] = reverse(b)
    julia> a
-   array([0, 1, 2, 3, 4, 4, 3, 2, 1, 0])
+   array([0, 1, 2, 3, 5, 4, 3, 2, 1, 0])
 
 .. topic:: **Exercise: Indexing and slicing**
    :class: green
@@ -506,37 +519,57 @@ You can also combine assignment and slicing:
 
      .. sourcecode:: pycon
 
-        julia> np.arange(6) + np.arange(0, 51, 10)[:, np.newaxis]
-        array([[ 0,  1,  2,  3,  4,  5],
-               [10, 11, 12, 13, 14, 15],
-               [20, 21, 22, 23, 24, 25],
-               [30, 31, 32, 33, 34, 35],
-               [40, 41, 42, 43, 44, 45],
-               [50, 51, 52, 53, 54, 55]])
+        julia> A = repeat(collect(0:5),1,6)'
+        6×6 adjoint(::Matrix{Int64}) with eltype Int64:
+         0  1  2  3  4  5
+         0  1  2  3  4  5
+         0  1  2  3  4  5
+         0  1  2  3  4  5
+         0  1  2  3  4  5
+         0  1  2  3  4  5
+
+        julia> B = [0:10:50;]
+        6-element Vector{Int64}:
+          0
+         10
+         20
+         30
+         40
+         50
+
+        julia> A .+ B
+        6×6 Matrix{Int64}:
+          0   1   2   3   4   5
+         10  11  12  13  14  15
+         20  21  22  23  24  25
+         30  31  32  33  34  35
+         40  41  42  43  44  45
+         50  51  52  53  54  55
+
 
 .. topic:: **Exercise: Array creation**
     :class: green
 
     Create the following arrays (with correct data types)::
 
-        [[1, 1, 1, 1],
-         [1, 1, 1, 1],
-         [1, 1, 1, 2],
-         [1, 6, 1, 1]]
+        [1 1 1 1;
+        1 1 1 1;
+        1 1 1 2;
+        1 6 1 1]
 
-        [[0., 0., 0., 0., 0.],
-         [2., 0., 0., 0., 0.],
-         [0., 3., 0., 0., 0.],
-         [0., 0., 4., 0., 0.],
-         [0., 0., 0., 5., 0.],
-         [0., 0., 0., 0., 6.]]
+        [0. 0. 0. 0. 0.;
+        2. 0. 0. 0. 0.;
+        0. 3. 0. 0. 0.;
+        0. 0. 4. 0. 0.;
+        0. 0. 0. 5. 0.;
+        0. 0. 0. 0. 6.]
 
     Par on course: 3 statements for each
 
     *Hint*: Individual array elements can be accessed similarly to a list,
     e.g. ``a[1]`` or ``a[1, 2]``.
 
-    *Hint*: Examine the docstring for ``diag``.
+    *Hint*: Examine the help for ``diagm`` in LinearAlgebra module.
 
 .. topic:: Exercise: Tiling for array creation
     :class: green
@@ -544,19 +577,16 @@ You can also combine assignment and slicing:
     Skim through the documentation for ``np.tile``, and use this function
     to construct the array::
 
-        [[4, 3, 4, 3, 4, 3],
-         [2, 1, 2, 1, 2, 1],
-         [4, 3, 4, 3, 4, 3],
-         [2, 1, 2, 1, 2, 1]]
+       [4 3 4 3 4 3;
+        2 1 2 1 2 1;
+        4 3 4 3 4 3;
+        2 1 2 1 2 1]
 
 Copies and views
 ----------------
 
 A slicing operation creates a **view** on the original array, which is
-just a way of accessing array data. Thus the original array is not
-copied in memory. You can use ``np.may_share_memory()`` to check if two arrays
-share the same memory block. Note however, that this uses heuristics and may
-give you false positives.
+just a way of accessing array data. 
 
 **When modifying the view, the original array is modified as well**:
 
@@ -582,8 +612,7 @@ give you false positives.
     julia> a
     array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
 
-    julia> np.may_share_memory(a, c)
-    False
+
 
 
 
