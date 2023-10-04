@@ -156,11 +156,11 @@ Manual construction of vectors
     * Create a simple two dimensional array. First, redo the examples
       from above. And then create your own: how about odd numbers
       counting backwards on the first row, and even numbers on the second?
-    * Use the functions `length`, :`size` on these arrays.
-      How do they relate to each other? And to the ``ndims`` operations on 
+    * Use the functions `length`, `size` on these arrays.
+      How do they relate to each other? And to the ``ndims`` function on 
       the arrays?
 
-Functions for creating arrays
+Functions for creating vectors
 ..............................
 
 .. tip::
@@ -171,24 +171,23 @@ Functions for creating arrays
 
   .. sourcecode:: pycon
 
-    julia> a = np.arange(10) # 0 .. n-1  (!)
-    julia> a
-    array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
-    julia> b = np.arange(1, 9, 2) # start, end (exclusive), step
+    julia> a = collect(1:10)
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]    
+    julia> b = 1:2:10 # start, step ,end (inclusive), 
     julia> b
-    array([1, 3, 5, 7])
+    [1, 3, 5, 7]
 
 * or by number of points:
 
   .. sourcecode:: pycon
 
-    julia> c = np.linspace(0, 1, 6)   # start, end, num-points
-    julia> c
-    array([0. ,  0.2,  0.4,  0.6,  0.8,  1. ])
-    julia> d = np.linspace(0, 1, 5, endpoint=False)
-    julia> d
-    array([0. ,  0.2,  0.4,  0.6,  0.8])
-
+    julia> c =  range(0,1,length = 6)   # start, end, num-points
+    0.0:0.2:1.0
+    julia> d = LinRange(0,1,6) #less overhead, prone to floating point errors
+    6-element LinRange{Float64, Int64}:
+    0.0, 0.2, 0.4, 0.6, 0.8, 1.0
+    
+    
 * Common arrays:
 
   .. sourcecode:: pycon
