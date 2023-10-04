@@ -192,26 +192,25 @@ Functions for creating vectors
 
   .. sourcecode:: pycon
 
-    julia> a = np.ones((3, 3))  # reminder: (3, 3) is a tuple
-    julia> a
-    array([[1.,  1.,  1.],
-           [1.,  1.,  1.],
-           [1.,  1.,  1.]])
-    julia> b = np.zeros((2, 2))
-    julia> b
-    array([[0.,  0.],
-           [0.,  0.]])
-    julia> c = np.eye(3)
-    julia> c
-    array([[1.,  0.,  0.],
-           [0.,  1.,  0.],
-           [0.,  0.,  1.]])
-    julia> d = np.diag(np.array([1, 2, 3, 4]))
-    julia> d
-    array([[1, 0, 0, 0],
-           [0, 2, 0, 0],
-           [0, 0, 3, 0],
-           [0, 0, 0, 4]])
+    julia> a = ones(3,3)
+    3×3 Matrix{Float64}:
+     1.0  1.0  1.0
+     1.0  1.0  1.0
+     1.0  1.0  1.0
+
+    julia> b = zeros(3,3)
+    3×3 Matrix{Float64}:
+     0.0  0.0  0.0
+     0.0  0.0  0.0
+     0.0  0.0  0.0  
+
+    julia> using LinearAlgebra
+
+    julia> c = Matrix(1.0I,3,3) #identity matrix
+    3×3 Matrix{Float64}:
+     1.0  0.0  0.0
+     0.0  1.0  0.0
+     0.0  0.0  1.0
 
 * :mod:`np.random`: random numbers (Mersenne Twister PRNG):
 
