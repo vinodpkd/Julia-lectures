@@ -1,6 +1,4 @@
 ..  
-
-
 .. currentmodule:: numpy
 
 The Julia Vector
@@ -710,25 +708,23 @@ Using boolean masks
 
 .. sourcecode:: pycon
 
-    julia> rng = np.random.default_rng(27446968)
-    julia> a = rng.integers(0, 21, 15)
+    julia> a = rand(1:21,15)
     julia> a
     array([ 3, 13, 12, 10, 10, 10, 18,  4,  8,  5,  6, 11, 12, 17,  3])
-    julia> (a % 3 == 0)
-    array([ True, False,  True, False, False, False,  True, False, False,
-           False,  True, False,  True, False,  True])
-    julia> mask = (a % 3 == 0)
-    julia> extract_from_a = a[mask] # or,  a[a%3==0]
+    julia> (a .% 3 .== 0)
+    Bool[1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1]
+    julia> mask = (a .% 3 .== 0)
+    julia> extract_from_a = a[mask] # or,   a[a .% 3 .== 0]
     julia> extract_from_a           # extract a sub-array with the mask
-    array([ 3, 12, 18,  6, 12,  3])
+    [ 3, 12, 18,  6, 12,  3]
 
 Indexing with a mask can be very useful to assign a new value to a sub-array:
 
 .. sourcecode:: pycon
 
-    julia> a[a % 3 == 0] = -1
+    julia> a[a .% 3 .== 0] .= -1
     julia> a
-    array([-1, 13, -1, 10, 10, 10, -1,  4,  8,  5, -1, 11, -1, 17, -1])
+    [-1, 13, -1, 10, 10, 10, -1, 4, 8, 5, -1, 11, -1, 17, -1]
 
 
 Indexing with an array of integers
@@ -736,76 +732,27 @@ Indexing with an array of integers
 
 .. sourcecode:: pycon
 
-    julia> a = np.arange(0, 100, 10)
+    julia> a = collect(0:10:90)
     julia> a
-    array([ 0, 10, 20, 30, 40, 50, 60, 70, 80, 90])
+    [ 0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
 
 Indexing can be done with an array of integers, where the same index is repeated
 several time:
 
 .. sourcecode:: pycon
 
-    julia> a[[2, 3, 2, 4, 2]]  # note: [2, 3, 2, 4, 2] is a Python list
-    array([20, 30, 20, 40, 20])
+    julia> a[[1,2,3]]
+	3-element Vector{Int64}:
+	  0
+	 10
+	 20
 
 New values can be assigned with this kind of indexing:
 
 .. sourcecode:: pycon
 
-    julia> a[[9, 7]] = -100
+    julia> a[[10, 8]] .= -100
     julia> a
-    array([   0,   10,   20,   30,   40,   50,   60, -100,   80, -100])
-
-.. tip::
-
-  When a new array is created by indexing with an array of integers, the
-  new array has the same shape as the array of integers:
-
-  .. sourcecode:: pycon
-
-    julia> a = np.arange(10)
-    julia> idx = np.array([[3, 4], [9, 7]])
-    julia> idx.shape
-    (2, 2)
-    julia> a[idx]
-    array([[3, 4],
-           [9, 7]])
-
+           [0,   10,   20,   30,   40,   50,   60, -100,   80, -100]
 
 ____
-
-The image below illustrates various fancy indexing applications
-
-.. only:: latex
-
-    .. image:: ../../pyximages/numpy_fancy_indexing.pdf
-        :align: center
-
-.. only:: html
-
-    .. image:: ../../pyximages/numpy_fancy_indexing.png
-        :align: center
-        :width: 80%
-
-.. topic:: **Exercise: Fancy indexing**
-    :class: green
-
-    * Again, reproduce the fancy indexing shown in the diagram above.
-    * Use fancy indexing on the left and array creation on the right to assign
-      values into an array, for instance by setting parts of the array in
-      the diagram above to zero.
-
-.. We can even use fancy indexing and :ref:`broadcasting <broadcasting>` at
-.. the same time:
-..
-.. .. sourcecode:: pycon
-..
-..     julia> a = np.arange(12).reshape(3,4)
-..     julia> a
-..     array([[ 0,  1,  2,  3],
-..            [ 4,  5,  6,  7],
-..            [ 8,  9, 10, 11]])
-..     julia> i = np.array([[0, 1], [1, 2]])
-..     julia> a[i, 2] # same as a[i, 2*np.ones((2, 2), dtype=int)]
-..     array([[ 2,  6],
-..            [ 6, 10]])
