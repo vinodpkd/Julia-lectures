@@ -1,13 +1,6 @@
-
-..  For doctests
-
-    >>> import numpy as np
-    >>> # For doctest on headless environments
-    >>> import matplotlib.pyplot as plt
-
 .. currentmodule:: numpy
 
-Numerical operations on arrays
+Numerical operations on vectors and Matrices
 ==============================
 
 .. contents:: Section contents
@@ -25,68 +18,92 @@ With scalars:
 
 .. sourcecode:: pycon
 
-    >>> a = np.array([1, 2, 3, 4])
-    >>> a + 1
-    array([2, 3, 4, 5])
-    >>> 2**a
-    array([ 2,  4,  8, 16])
+    julia> a =[1, 2, 3, 4]
+    julia> a .+ 1 #space is necessary between a and .+
+    [2, 3, 4, 5]
+    julia> 2 .^a #space is necessary between 2 and .^
+    [2,  4,  8, 16]
 
 All arithmetic operates elementwise:
 
 .. sourcecode:: pycon
 
-    >>> b = np.ones(4) + 1
-    >>> a - b
-    array([-1.,  0.,  1.,  2.])
-    >>> a * b
+	julia> b = ones(4) .+ 1     
+	4-element Vector{Float64}:  
+	 2.0                        
+	 2.0                        
+	 2.0                        
+	 2.0                        
+	                            
+	julia> a - b                
+	4-element Vector{Float64}:  
+	 -1.0                       
+	  0.0                       
+	  1.0                       
+	  2.0                       
+	                            
+
+    
+    julia> a .* b
     array([2.,  4.,  6.,  8.])
 
-    >>> j = np.arange(5)
-    >>> 2**(j + 1) - j
-    array([ 2,  3,  6, 13, 28])
+    julia> j = collect(0:4)
+    julia> 2 .^(j .+ 1) .- j
+		5-element Vector{Int64}:
+		  2
+		  3
+		  6
+		 13
+		 28
+	
 
-These operations are of course much faster than if you did them in pure python:
-
-.. sourcecode:: pycon
-
-   >>> a = np.arange(10000)
-   >>> %timeit a + 1  # doctest: +SKIP
-   10000 loops, best of 3: 24.3 us per loop
-   >>> l = range(10000)
-   >>> %timeit [i+1 for i in l] # doctest: +SKIP
-   1000 loops, best of 3: 861 us per loop
-
-
-.. warning:: **Array multiplication is not matrix multiplication:**
+.. note:: **Array multiplication is matrix multiplication:**
 
     .. sourcecode:: pycon
 
-        >>> c = np.ones((3, 3))
-        >>> c * c                   # NOT matrix multiplication!
-        array([[1.,  1.,  1.],
-               [1.,  1.,  1.],
-               [1.,  1.,  1.]])
+        julia> c = ones(3, 3)   
+		3×3 Matrix{Float64}:    
+		 1.0  1.0  1.0          
+		 1.0  1.0  1.0          
+		 1.0  1.0  1.0          
+		                        
+		julia> c*c              
+		3×3 Matrix{Float64}:    
+		 3.0  3.0  3.0          
+		 3.0  3.0  3.0          
+		 3.0  3.0  3.0          
+		                        
 
-.. note:: **Matrix multiplication:**
+.. note:: **Elementwise multiplication:**
 
     .. sourcecode:: pycon
 
-        >>> c @ c
-        array([[3.,  3.,  3.],
-               [3.,  3.,  3.],
-               [3.,  3.,  3.]])
+        julia> c .* c
+        3×3 Matrix{Float64}:
+		 3.0  3.0  3.0
+		 3.0  3.0  3.0
+		 3.0  3.0  3.0
+		julia> d = rand(1:5,3,3)
+		3×3 Matrix{Int64}:
+		 5  1  3
+		 1  4  3
+		 4  3  4
 
+		julia> c .*d
+		3×3 Matrix{Float64}:
+		 5.0  1.0  3.0
+		 1.0  4.0  3.0
+		 4.0  3.0  4.0
+			   
 .. topic:: **Exercise: Elementwise operations**
    :class: green
 
     * Try simple arithmetic elementwise operations: add even elements
       with odd elements
-    * Time them against their pure python counterparts using ``%timeit``.
     * Generate:
 
-      * ``[2**0, 2**1, 2**2, 2**3, 2**4]``
+      * ``[2^0, 2^1, 2^2, 2^3, 2^4]``
       * ``a_j = 2^(3*j) - j``
-
 
 Other operations
 ................
@@ -95,61 +112,75 @@ Other operations
 
 .. sourcecode:: pycon
 
-    >>> a = np.array([1, 2, 3, 4])
-    >>> b = np.array([4, 2, 2, 4])
-    >>> a == b
-    array([False,  True, False,  True])
-    >>> a > b
-    array([False, False,  True, False])
-
-.. tip::
-
-   Array-wise comparisons:
-
-   .. sourcecode:: pycon
-
-    >>> a = np.array([1, 2, 3, 4])
-    >>> b = np.array([4, 2, 2, 4])
-    >>> c = np.array([1, 2, 3, 4])
-    >>> np.array_equal(a, b)
-    False
-    >>> np.array_equal(a, c)
-    True
-
+    julia> a = [1, 2, 3, 4]
+    julia> b = [4, 2, 2, 4]
+    julia> a == b        
+	false                
+	                     
+	julia> a .== b       
+	4-element BitVector: 
+	 0                   
+	 1                   
+	 0                   
+	 1                   
+	julia> a .> b             
+	4-element BitVector:      
+	 0                        
+	 0                        
+	 1                        
+	 0                        
+                             
 
 **Logical operations:**
 
 .. sourcecode:: pycon
 
-    >>> a = np.array([1, 1, 0, 0], dtype=bool)
-    >>> b = np.array([1, 0, 1, 0], dtype=bool)
-    >>> np.logical_or(a, b)
-    array([ True,  True,  True, False])
-    >>> np.logical_and(a, b)
-    array([ True, False, False, False])
+    julia> a = Bool[1, 1, 0, 0]
+    julia> b = Bool[1, 0, 1, 0]
+    julia> a .| b
+	4-element BitVector:
+	 1
+	 1
+	 1
+	 0	
+    julia> a .& b
+	4-element BitVector:
+	 1
+	 0
+	 0
+	 0
 
 **Transcendental functions:**
 
 .. sourcecode:: pycon
 
-    >>> a = np.arange(5)
-    >>> np.sin(a)
-    array([ 0.        ,  0.84147098,  0.90929743,  0.14112001, -0.7568025 ])
-    >>> np.exp(a)
-    array([ 1.        ,   2.71828183,   7.3890561 ,  20.08553692,  54.59815003])
-    >>> np.log(np.exp(a))
-    array([0., 1., 2., 3., 4.])
+    julia> a = collect(0:4)
+    julia> sin.(a)
+    [0.        ,  0.84147098,  0.90929743,  0.14112001, -0.7568025 ]
+    julia> exp.(a)
+    [ 1.        ,   2.71828183,   7.3890561 ,  20.08553692,  54.59815003]
+    julia> log.(exp.(a))
+    [0., 1., 2., 3., 4.]
+	julia> sind.(a) #sine in degrees
+	[0.0, 0.01745240643728351, 0.03489949670250097, 0.052335956242943835, 0.0697564737441253]
 
 
 **Shape mismatches**
 
 .. sourcecode:: pycon
 
-    >>> a = np.arange(4)
-    >>> a + np.array([1, 2])
-    Traceback (most recent call last):
-      File "<stdin>", line 1, in <module>
-    ValueError: operands could not be broadcast together with shapes (4,) (2,)
+    julia> a = collect(0:4)
+    julia> a + [1,2]
+	ERROR: DimensionMismatch: dimensions must match: a has dims (Base.OneTo(5),), b has dims (Base.OneTo(2),), mismatch at 1
+	Stacktrace:
+	 [1] promote_shape
+	   @ .\indices.jl:178 [inlined]
+	 [2] promote_shape
+	   @ .\indices.jl:169 [inlined]
+	 [3] +(A::Vector{Int64}, Bs::Vector{Int64})
+	   @ Base .\arraymath.jl:14
+	 [4] top-level scope
+	   @ REPL[85]:1	
 
 *Broadcasting?* We'll return to that :ref:`later <broadcasting>`.
 
@@ -157,45 +188,31 @@ Other operations
 
 .. sourcecode:: pycon
 
-    >>> a = np.triu(np.ones((3, 3)), 1)   # see help(np.triu)
-    >>> a
-    array([[0.,  1.,  1.],
-           [0.,  0.,  1.],
-           [0.,  0.,  0.]])
-    >>> a.T
-    array([[0.,  0.,  0.],
-           [1.,  0.,  0.],
-           [1.,  1.,  0.]])
+    julia> using LinearAlgebra
+	julia> a = triu(ones(3, 3), 1)   # see ?triu
+    julia> a = triu(ones(3, 3), 1)
+	3×3 Matrix{Float64}:
+	 0.0  1.0  1.0
+	 0.0  0.0  1.0
+	 0.0  0.0  0.0
+	julia> a'
+	3×3 adjoint(::Matrix{Float64}) with eltype Float64:
+	 0.0  0.0  0.0
+	 1.0  0.0  0.0
+	 1.0  1.0  0.0
 
 
-.. note:: **The transposition is a view**
-
-    The transpose returns a *view* of the original array::
-
-        >>> a = np.arange(9).reshape(3, 3)
-        >>> a.T[0, 2] = 999
-        >>> a.T
-        array([[  0,   3, 999],
-               [  1,   4,   7],
-               [  2,   5,   8]])
-        >>> a
-        array([[  0,   1,   2],
-               [  3,   4,   5],
-               [999,   7,   8]])
 
 .. note:: **Linear algebra**
 
-    The sub-module :mod:`numpy.linalg` implements basic linear algebra, such as
-    solving linear systems, singular value decomposition, etc. However, it is
-    not guaranteed to be compiled using efficient routines, and thus we
-    recommend the use of :mod:`scipy.linalg`, as detailed in section
-    :ref:`scipy_linalg`
-
+    The sub-module :mod:`LinearAlgebra` implements basic linear algebra, such as
+    solving linear systems, singular value decomposition, etc. 
+	
 .. topic:: Exercise other operations
    :class: green
 
-    * Look at the help for ``np.allclose``. When might this be useful?
-    * Look at the help for ``np.triu`` and ``np.tril``.
+    * Look at the help for ``isapprox``. When might this be useful?
+    * Look at the help for ``triu`` and ``tril``.
 
 
 Basic reductions
@@ -206,11 +223,10 @@ Computing sums
 
 .. sourcecode:: pycon
 
-    >>> x = np.array([1, 2, 3, 4])
-    >>> np.sum(x)
+    julia> x = [1, 2, 3, 4]
+    julia> sum(x)
     10
-    >>> x.sum()
-    10
+    
 
 .. image:: images/reductions.png
    :align: right
@@ -219,18 +235,21 @@ Sum by rows and by columns:
 
 .. sourcecode:: pycon
 
-    >>> x = np.array([[1, 1], [2, 2]])
-    >>> x
-    array([[1, 1],
-           [2, 2]])
-    >>> x.sum(axis=0)   # columns (first dimension)
-    array([3, 3])
-    >>> x[:, 0].sum(), x[:, 1].sum()
-    (3, 3)
-    >>> x.sum(axis=1)   # rows (second dimension)
-    array([2, 4])
-    >>> x[0, :].sum(), x[1, :].sum()
-    (2, 4)
+    julia> x = [1, 1; 2, 2]]    
+    julia> sum(A)
+    6    
+	julia> sum(A,dims=1)
+	1×2 Matrix{Int64}:
+	 3  3
+
+	julia> sum(A,dims=2)
+	2×1 Matrix{Int64}:
+	 2
+	 4
+	julia> sum(A[1,:])
+	2
+	julia> sum(A[:,1])
+	3
 
 .. tip::
 
@@ -238,11 +257,11 @@ Sum by rows and by columns:
 
   .. sourcecode:: pycon
 
-    >>> rng = np.random.default_rng(27446968)
-    >>> x = rng.random((2, 2, 2))
-    >>> x.sum(axis=2)[0, 1]
+    julia> rng = np.random.default_rng(27446968)
+    julia> x = rng.random((2, 2, 2))
+    julia> x.sum(axis=2)[0, 1]
     0.73415...
-    >>> x[0, 1, :].sum()
+    julia> x[0, 1, :].sum()
     0.73415...
 
 Other reductions
@@ -254,24 +273,24 @@ Other reductions
 
 .. sourcecode:: pycon
 
-  >>> x = np.array([1, 3, 2])
-  >>> x.min()
+  julia> x = [1, 3, 2]
+  julia> x.min()
   1
-  >>> x.max()
+  julia> x.max()
   3
 
-  >>> x.argmin()  # index of minimum
+  julia> x.argmin()  # index of minimum
   0
-  >>> x.argmax()  # index of maximum
+  julia> x.argmax()  # index of maximum
   1
 
 **Logical operations:**
 
 .. sourcecode:: pycon
 
-  >>> np.all([True, True, False])
+  julia> np.all([True, True, False])
   False
-  >>> np.any([True, True, False])
+  julia> np.any([True, True, False])
   True
 
 .. note::
@@ -280,32 +299,32 @@ Other reductions
 
    .. sourcecode:: pycon
 
-      >>> a = np.zeros((100, 100))
-      >>> np.any(a != 0)
+      julia> a = np.zeros((100, 100))
+      julia> np.any(a != 0)
       False
-      >>> np.all(a == a)
+      julia> np.all(a == a)
       True
 
-      >>> a = np.array([1, 2, 3, 2])
-      >>> b = np.array([2, 2, 3, 2])
-      >>> c = np.array([6, 4, 4, 5])
-      >>> ((a <= b) & (b <= c)).all()
+      julia> a = [1, 2, 3, 2]
+      julia> b = [2, 2, 3, 2]
+      julia> c = [6, 4, 4, 5]
+      julia> ((a <= b) & (b <= c)).all()
       True
 
 **Statistics:**
 
 .. sourcecode:: pycon
 
-  >>> x = np.array([1, 2, 3, 1])
-  >>> y = np.array([[1, 2, 3], [5, 6, 1]])
-  >>> x.mean()
+  julia> x = [1, 2, 3, 1]
+  julia> y = [[1, 2, 3], [5, 6, 1]]
+  julia> x.mean()
   1.75
-  >>> np.median(x)
+  julia> np.median(x)
   1.5
-  >>> np.median(y, axis=-1) # last axis
+  julia> np.median(y, axis=-1) # last axis
   array([2.,  5.])
 
-  >>> x.std()          # full population standard dev.
+  julia> x.std()          # full population standard dev.
   0.82915619758884995
 
 
@@ -348,45 +367,45 @@ Other reductions
 
   .. sourcecode:: pycon
 
-   >>> n_stories = 1000 # number of walkers
-   >>> t_max = 200      # time during which we follow the walker
+   julia> n_stories = 1000 # number of walkers
+   julia> t_max = 200      # time during which we follow the walker
 
   We randomly choose all the steps 1 or -1 of the walk:
 
   .. sourcecode:: pycon
 
-   >>> t = np.arange(t_max)
-   >>> rng = np.random.default_rng()
-   >>> steps = 2 * rng.integers(0, 1 + 1, (n_stories, t_max)) - 1 # +1 because the high value is exclusive
-   >>> np.unique(steps) # Verification: all steps are 1 or -1
+   julia> t = np.arange(t_max)
+   julia> rng = np.random.default_rng()
+   julia> steps = 2 * rng.integers(0, 1 + 1, (n_stories, t_max)) - 1 # +1 because the high value is exclusive
+   julia> np.unique(steps) # Verification: all steps are 1 or -1
    array([-1,  1])
 
   We build the walks by summing steps along the time:
 
   .. sourcecode:: pycon
 
-   >>> positions = np.cumsum(steps, axis=1) # axis = 1: dimension of time
-   >>> sq_distance = positions**2
+   julia> positions = np.cumsum(steps, axis=1) # axis = 1: dimension of time
+   julia> sq_distance = positions**2
 
   We get the mean in the axis of the stories:
 
   .. sourcecode:: pycon
 
-   >>> mean_sq_distance = np.mean(sq_distance, axis=0)
+   julia> mean_sq_distance = np.mean(sq_distance, axis=0)
 
   Plot the results:
 
   .. sourcecode:: pycon
 
-   >>> plt.figure(figsize=(4, 3))
+   julia> plt.figure(figsize=(4, 3))
    <Figure size ... with 0 Axes>
-   >>> plt.plot(t, np.sqrt(mean_sq_distance), 'g.', t, np.sqrt(t), 'y-')
+   julia> plt.plot(t, np.sqrt(mean_sq_distance), 'g.', t, np.sqrt(t), 'y-')
    [<matplotlib.lines.Line2D object at ...>, <matplotlib.lines.Line2D object at ...>]
-   >>> plt.xlabel(r"$t$")
+   julia> plt.xlabel(r"$t$")
    Text(...'$t$')
-   >>> plt.ylabel(r"$\sqrt{\langle (\delta x)^2 \rangle}$")
+   julia> plt.ylabel(r"$\sqrt{\langle (\delta x)^2 \rangle}$")
    Text(...'$\\sqrt{\\langle (\\delta x)^2 \\rangle}$')
-   >>> plt.tight_layout() # provide sufficient space for labels
+   julia> plt.tight_layout() # provide sufficient space for labels
 
   .. image:: auto_examples/images/sphx_glr_plot_randomwalk_001.png
      :width: 50%
@@ -441,14 +460,14 @@ Let's verify:
 
 .. sourcecode:: pycon
 
-    >>> a = np.tile(np.arange(0, 40, 10), (3, 1)).T
-    >>> a
+    julia> a = np.tile(np.arange(0, 40, 10), (3, 1)).T
+    julia> a
     array([[ 0,  0,  0],
            [10, 10, 10],
            [20, 20, 20],
            [30, 30, 30]])
-    >>> b = np.array([0, 1, 2])
-    >>> a + b
+    julia> b = [0, 1, 2]
+    julia> a + b
     array([[ 0,  1,  2],
            [10, 11, 12],
            [20, 21, 22],
@@ -458,9 +477,9 @@ We have already used broadcasting without knowing it!:
 
 .. sourcecode:: pycon
 
-    >>> a = np.ones((4, 5))
-    >>> a[0] = 2  # we assign an array of dimension 0 to an array of dimension 1
-    >>> a
+    julia> a = np.ones((4, 5))
+    julia> a[0] = 2  # we assign an array of dimension 0 to an array of dimension 1
+    julia> a
     array([[2.,  2.,  2.,  2.,  2.],
            [1.,  1.,  1.,  1.,  1.],
            [1.,  1.,  1.,  1.,  1.],
@@ -470,18 +489,18 @@ A useful trick:
 
 .. sourcecode:: pycon
 
-    >>> a = np.arange(0, 40, 10)
-    >>> a.shape
+    julia> a = np.arange(0, 40, 10)
+    julia> a.shape
     (4,)
-    >>> a = a[:, np.newaxis]  # adds a new axis -> 2D array
-    >>> a.shape
+    julia> a = a[:, np.newaxis]  # adds a new axis -> 2D array
+    julia> a.shape
     (4, 1)
-    >>> a
+    julia> a
     array([[ 0],
            [10],
            [20],
            [30]])
-    >>> a + b
+    julia> a + b
     array([[ 0,  1,  2],
            [10, 11, 12],
            [20, 21, 22],
@@ -503,10 +522,10 @@ A useful trick:
 
    .. sourcecode:: pycon
 
-       >>> mileposts = np.array([0, 198, 303, 736, 871, 1175, 1475, 1544,
+       julia> mileposts = np.array([0, 198, 303, 736, 871, 1175, 1475, 1544,
        ...        1913, 2448])
-       >>> distance_array = np.abs(mileposts - mileposts[:, np.newaxis])
-       >>> distance_array
+       julia> distance_array = np.abs(mileposts - mileposts[:, np.newaxis])
+       julia> distance_array
        array([[   0,  198,  303,  736,  871, 1175, 1475, 1544, 1913, 2448],
               [ 198,    0,  105,  538,  673,  977, 1277, 1346, 1715, 2250],
               [ 303,  105,    0,  433,  568,  872, 1172, 1241, 1610, 2145],
@@ -529,9 +548,9 @@ the origin of points on a 5x5 grid, we can do
 
 .. sourcecode:: pycon
 
-    >>> x, y = np.arange(5), np.arange(5)[:, np.newaxis]
-    >>> distance = np.sqrt(x ** 2 + y ** 2)
-    >>> distance
+    julia> x, y = np.arange(5), np.arange(5)[:, np.newaxis]
+    julia> distance = np.sqrt(x ** 2 + y ** 2)
+    julia> distance
     array([[0.        ,  1.        ,  2.        ,  3.        ,  4.        ],
            [1.        ,  1.41421356,  2.23606798,  3.16227766,  4.12310563],
            [2.        ,  2.23606798,  2.82842712,  3.60555128,  4.47213595],
@@ -542,9 +561,9 @@ Or in color:
 
 .. sourcecode:: pycon
 
-    >>> plt.pcolor(distance)
+    julia> plt.pcolor(distance)
     <matplotlib.collections.PolyQuadMesh object at ...>
-    >>> plt.colorbar()
+    julia> plt.colorbar()
     <matplotlib.colorbar.Colorbar object at ...>
 
 .. image:: auto_examples/images/sphx_glr_plot_distances_001.png
@@ -558,16 +577,16 @@ and y of the previous example, with two "significant dimensions":
 
 .. sourcecode:: pycon
 
-    >>> x, y = np.ogrid[0:5, 0:5]
-    >>> x, y
+    julia> x, y = np.ogrid[0:5, 0:5]
+    julia> x, y
     (array([[0],
            [1],
            [2],
            [3],
            [4]]), array([[0, 1, 2, 3, 4]]))
-    >>> x.shape, y.shape
+    julia> x.shape, y.shape
     ((5, 1), (1, 5))
-    >>> distance = np.sqrt(x ** 2 + y ** 2)
+    julia> distance = np.sqrt(x ** 2 + y ** 2)
 
 .. tip::
 
@@ -578,13 +597,13 @@ and y of the previous example, with two "significant dimensions":
 
   .. sourcecode:: pycon
 
-    >>> x, y = np.mgrid[0:4, 0:4]
-    >>> x
+    julia> x, y = np.mgrid[0:4, 0:4]
+    julia> x
     array([[0, 0, 0, 0],
            [1, 1, 1, 1],
            [2, 2, 2, 2],
            [3, 3, 3, 3]])
-    >>> y
+    julia> y
     array([[0, 1, 2, 3],
            [0, 1, 2, 3],
            [0, 1, 2, 3],
@@ -615,14 +634,14 @@ Flattening
 
 .. sourcecode:: pycon
 
-    >>> a = np.array([[1, 2, 3], [4, 5, 6]])
-    >>> a.ravel()
+    julia> a = [[1, 2, 3], [4, 5, 6]]
+    julia> a.ravel()
     array([1, 2, 3, 4, 5, 6])
-    >>> a.T
+    julia> a.T
     array([[1, 4],
            [2, 5],
            [3, 6]])
-    >>> a.T.ravel()
+    julia> a.T.ravel()
     array([1, 4, 2, 5, 3, 6])
 
 Higher dimensions: last dimensions ravel out "first".
@@ -634,11 +653,11 @@ The inverse operation to flattening:
 
 .. sourcecode:: pycon
 
-    >>> a.shape
+    julia> a.shape
     (2, 3)
-    >>> b = a.ravel()
-    >>> b = b.reshape((2, 3))
-    >>> b
+    julia> b = a.ravel()
+    julia> b = b.reshape((2, 3))
+    julia> b
     array([[1, 2, 3],
            [4, 5, 6]])
 
@@ -646,7 +665,7 @@ Or,
 
 .. sourcecode:: pycon
 
-    >>> a.reshape((2, -1))    # unspecified (-1) value is inferred
+    julia> a.reshape((2, -1))    # unspecified (-1) value is inferred
     array([[1, 2, 3],
            [4, 5, 6]])
 
@@ -659,8 +678,8 @@ Or,
 
    .. sourcecode:: pycon
 
-     >>> b[0, 0] = 99
-     >>> a
+     julia> b[0, 0] = 99
+     julia> a
      array([[99,  2,  3],
             [ 4,  5,  6]])
 
@@ -668,10 +687,10 @@ Or,
 
    .. sourcecode:: pycon
 
-     >>> a = np.zeros((3, 2))
-     >>> b = a.T.reshape(3*2)
-     >>> b[0] = 9
-     >>> a
+     julia> a = np.zeros((3, 2))
+     julia> b = a.T.reshape(3*2)
+     julia> b[0] = 9
+     julia> a
      array([[0.,  0.],
             [0.,  0.],
             [0.,  0.]])
@@ -686,16 +705,16 @@ Indexing with the ``np.newaxis`` object allows us to add an axis to an array
 
 .. sourcecode:: pycon
 
-    >>> z = np.array([1, 2, 3])
-    >>> z
+    julia> z = [1, 2, 3]
+    julia> z
     array([1, 2, 3])
 
-    >>> z[:, np.newaxis]
+    julia> z[:, np.newaxis]
     array([[1],
            [2],
            [3]])
 
-    >>> z[np.newaxis, :]
+    julia> z[np.newaxis, :]
     array([[1, 2, 3]])
 
 
@@ -705,23 +724,23 @@ Dimension shuffling
 
 .. sourcecode:: pycon
 
-    >>> a = np.arange(4*3*2).reshape(4, 3, 2)
-    >>> a.shape
+    julia> a = np.arange(4*3*2).reshape(4, 3, 2)
+    julia> a.shape
     (4, 3, 2)
-    >>> a[0, 2, 1]
+    julia> a[0, 2, 1]
     5
-    >>> b = a.transpose(1, 2, 0)
-    >>> b.shape
+    julia> b = a.transpose(1, 2, 0)
+    julia> b.shape
     (3, 2, 4)
-    >>> b[2, 1, 0]
+    julia> b[2, 1, 0]
     5
 
 Also creates a view:
 
 .. sourcecode:: pycon
 
-    >>> b[2, 1, 0] = -1
-    >>> a[0, 2, 1]
+    julia> b[2, 1, 0] = -1
+    julia> a[0, 2, 1]
     -1
 
 Resizing
@@ -731,17 +750,17 @@ Size of an array can be changed with ``ndarray.resize``:
 
 .. sourcecode:: pycon
 
-    >>> a = np.arange(4)
-    >>> a.resize((8,))
-    >>> a
+    julia> a = np.arange(4)
+    julia> a.resize((8,))
+    julia> a
     array([0, 1, 2, 3, 0, 0, 0, 0])
 
 However, it must not be referred to somewhere else:
 
 .. sourcecode:: pycon
 
-    >>> b = a
-    >>> a.resize((4,))
+    julia> b = a
+    julia> a.resize((4,))
     Traceback (most recent call last):
       File "<stdin>", line 1, in <module>
     ValueError: cannot resize an array that references or is referenced
@@ -781,9 +800,9 @@ Sorting along an axis:
 
 .. sourcecode:: pycon
 
-    >>> a = np.array([[4, 3, 5], [1, 2, 1]])
-    >>> b = np.sort(a, axis=1)
-    >>> b
+    julia> a = [[4, 3, 5], [1, 2, 1]]
+    julia> b = np.sort(a, axis=1)
+    julia> b
     array([[3, 4, 5],
            [1, 1, 2]])
 
@@ -793,8 +812,8 @@ In-place sort:
 
 .. sourcecode:: pycon
 
-    >>> a.sort(axis=1)
-    >>> a
+    julia> a.sort(axis=1)
+    julia> a
     array([[3, 4, 5],
            [1, 1, 2]])
 
@@ -802,21 +821,21 @@ Sorting with fancy indexing:
 
 .. sourcecode:: pycon
 
-    >>> a = np.array([4, 3, 1, 2])
-    >>> j = np.argsort(a)
-    >>> j
+    julia> a = [4, 3, 1, 2]
+    julia> j = np.argsort(a)
+    julia> j
     array([2, 3, 1, 0])
-    >>> a[j]
+    julia> a[j]
     array([1, 2, 3, 4])
 
 Finding minima and maxima:
 
 .. sourcecode:: pycon
 
-    >>> a = np.array([4, 3, 1, 2])
-    >>> j_max = np.argmax(a)
-    >>> j_min = np.argmin(a)
-    >>> j_max, j_min
+    julia> a = [4, 3, 1, 2]
+    julia> j_max = np.argmax(a)
+    julia> j_min = np.argmin(a)
+    julia> j_max, j_min
     (0, 2)
 
 
@@ -859,7 +878,7 @@ Summary
 
   .. sourcecode:: pycon
 
-     >>> a[a < 0] = 0
+     julia> a[a < 0] = 0
 
 * Know miscellaneous operations on arrays, such as finding the mean or max
   (``array.max()``, ``array.mean()``). No need to retain everything, but
