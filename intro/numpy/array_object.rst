@@ -94,12 +94,10 @@ Julia Reference documentation
 - Looking for something:
 
 
-  .. ipython::
+  .. sourcecode:: pycon
 
      julia> mat<Tab><Tab> # press tab key two times
      MathConstants  Matrix
-
-
 
 
 Creating vectors
@@ -222,20 +220,20 @@ Functions for creating vectors
   TaskLocalRNG()                
                                 
   julia> a = rand(5,) #uniform random numbers in the range [0,1]          
-  5-element Vector{Float64}:    
-   0.521213795535383            
-   0.5868067574533484           
-   0.8908786980927811           
-   0.19090669902576285          
-   0.5256623915420473 
+		  5-element Vector{Float64}:    
+		   0.521213795535383            
+		   0.5868067574533484           
+		   0.8908786980927811           
+		   0.19090669902576285          
+		   0.5256623915420473 
    
    julia> b = randn(5,) #Gaussian random vector
-5-element Vector{Float64}:
-  0.9809798121241488
-  0.0799568295050599
-  1.5491245530427917
- -1.3416092408832219
-  0.41216163468296796   
+		5-element Vector{Float64}:
+		  0.9809798121241488
+		  0.0799568295050599
+		  1.5491245530427917
+		 -1.3416092408832219
+		  0.41216163468296796   
    
    
 .. topic:: **Exercise: Creating arrays using functions**
@@ -367,9 +365,10 @@ Now that we have our first data arrays, we are going to visualize them.
 * **2D arrays** (such as images):
 
 .. sourcecode:: pycon
-  julia> using PyPlot
-  julia> image = rand(1:255,10,10)
-  julia> PyPlot.imshow(image)
+
+	  julia> using PyPlot
+	  julia> image = rand(0:255,10,10)
+	  julia> PyPlot.imshow(image)
  
 
 .. image:: auto_examples/images/sphx_glr_plot_basic2dplot_001.png
@@ -498,17 +497,62 @@ A small illustrated summary of NumPy indexing and slicing...
 You can also combine assignment and slicing:
 
 .. sourcecode:: pycon
-
-   julia> a = 0:9
-   julia> a[5:end] = 10
-   julia> a
-   array([ 0,  1,  2,  3,  10, 10, 10, 10, 10, 10])
-   julia> b = 0:5
-   julia> a[5:] = reverse(b)
-   julia> a
-   array([0, 1, 2, 3, 5, 4, 3, 2, 1, 0])
-
-.. topic:: **Exercise: Indexing and slicing**
+   
+   julia> a = collect(0:9)                                               
+		   10-element Vector{Int64}:                                              
+			0                                                                     
+			1                                                                     
+			2                                                                     
+			3                                                                     
+			4                                                                     
+			5                                                                     
+			6                                                                     
+			7                                                                     
+			8                                                                     
+			9                                                                 
+                                                                       
+   julia> a[5:end] .= 10                                                  
+		   6-element view(::Vector{Int64}, 5:10) with eltype Int64:               
+			10                                                                    
+			10                                                                    
+			10                                                                    
+			10                                                                    
+			10                                                                    
+			10                                                                    
+																				  
+   julia> b = collect(0:5)                                                
+		   6-element Vector{Int64}:                                               
+			0                                                                     
+			1                                                                     
+			2                                                                     
+			3                                                                     
+			4                                                                     
+			5                                                                     
+                                                         
+                                                                         
+   julia> a[5:end] .= reverse(b)                                         
+		   6-element view(::Vector{Int64}, 5:10) with eltype Int64:              
+			5                                                                    
+			4                                                                    
+			3                                                                    
+			2                                                                    
+			1                                                                    
+			0                                                                    
+																				 
+   julia> a                                                              
+		   10-element Vector{Int64}:                                             
+			0                                                                    
+			1                                                                    
+			2                                                                    
+			3                                                                    
+			5                                                                    
+			4                                                                    
+			3                                                                    
+			2                                                                    
+			1                                                                    
+			0                                                                    
+                                                                         
+ .. topic:: **Exercise: Indexing and slicing**
    :class: green
 
    * Try the different flavours of slicing, using ``start``, ``end`` and
@@ -591,34 +635,13 @@ just a way of accessing array data.
 **When modifying the view, the original array is modified as well**:
 
 .. sourcecode:: pycon
-
-    julia> a = np.arange(10)
-    julia> a
-    array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
-    julia> b = a[::2]
-    julia> b
-    array([0, 2, 4, 6, 8])
-    julia> np.may_share_memory(a, b)
-    True
-    julia> b[0] = 12
-    julia> b
-    array([12,  2,  4,  6,  8])
-    julia> a   # (!)
-    array([12,  1,  2,  3,  4,  5,  6,  7,  8,  9])
-
-    julia> a = np.arange(10)
-    julia> c = a[::2].copy()  # force a copy
-    julia> c[0] = 12
-    julia> a
-    array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
-
-
-
-
-
-This behavior can be surprising at first sight... but it allows to save both
-memory and time.
-
+    
+		julia> using Statistics
+		julia> @allocated cor(x[1:10],x[1:10])
+		9204830
+		julia> @allocated cor(view(x,1:10),view(x,11:20)) #or @allocated @views cor(x[1:10],x[1:10])
+		8428206 #memory allocations are less 
+	
 
 .. EXE: [1, 2, 3, 4, 5] -> [1, 2, 3]
 .. EXE: [1, 2, 3, 4, 5] -> [4, 5]
@@ -643,27 +666,26 @@ memory and time.
 
    .. sourcecode:: pycon
 
-        julia> is_prime = np.ones((100,), dtype=bool)
+        julia> is_prime = fill(true,100)
 
    * Cross out 0 and 1 which are not primes:
 
    .. sourcecode:: pycon
 
-       julia> is_prime[:2] = 0
+       julia> is_prime[1] = false
 
    * For each integer ``j`` starting from 2, cross out its higher multiples:
 
    .. sourcecode:: pycon
 
-       julia> N_max = int(np.sqrt(len(is_prime) - 1))
-       julia> for j in range(2, N_max + 1):
-       ...     is_prime[2*j::j] = False
-
-   * Skim through ``help(np.nonzero)``, and print the prime numbers
+       julia> N_max = round(Int,sqrt(length(is_prime)))
+       julia> for j in 2:N_max
+					is_prime[2*j:j:end] .= false
+			end
 
    * Follow-up:
 
-     - Move the above code into a script file named ``prime_sieve.py``
+     - Move the above code into a script file named ``prime_sieve.jl``
 
      - Run it to check it works
 
