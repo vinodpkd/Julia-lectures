@@ -616,7 +616,7 @@ You can also combine assignment and slicing:
 .. topic:: Exercise: Tiling for array creation
     :class: green
 
-    Skim through the documentation for ``np.tile``, and use this function
+    Skim through the documentation for ``repeat``, and use this function
     to construct the array::
 
        [4 3 4 3 4 3;
